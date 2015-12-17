@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -655,10 +656,18 @@ public abstract class StandOutWindow extends Service {
 					PendingIntent.FLAG_UPDATE_CURRENT);
 		}
 
-		Notification notification = new Notification(icon, tickerText, when);
-		notification.setLatestEventInfo(c, contentTitle, contentText,
-				contentIntent);
-		return notification;
+		Notification.Builder builder = new Notification.Builder(c)
+				.setSmallIcon(icon)
+				.setTicker(tickerText)
+				.setWhen(when)
+				.setContentTitle(contentTitle)
+				.setContentText(contentText)
+				.setContentIntent(contentIntent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			return builder.build();
+		} else {
+			return builder.getNotification();
+		}
 	}
 
 	/**
@@ -699,10 +708,18 @@ public abstract class StandOutWindow extends Service {
 					PendingIntent.FLAG_UPDATE_CURRENT);
 		}
 
-		Notification notification = new Notification(icon, tickerText, when);
-		notification.setLatestEventInfo(c, contentTitle, contentText,
-				contentIntent);
-		return notification;
+		Notification.Builder builder = new Notification.Builder(c)
+				.setSmallIcon(icon)
+				.setTicker(tickerText)
+				.setWhen(when)
+				.setContentTitle(contentTitle)
+				.setContentText(contentText)
+				.setContentIntent(contentIntent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			return builder.build();
+		} else {
+			return builder.getNotification();
+		}
 	}
 
 	/**
