@@ -13,12 +13,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -346,6 +348,10 @@ public abstract class StandOutWindow extends Service {
 	// internal state variables
 	private boolean startedForeground;
 
+	private SharedPreferences pref;
+	private String disableNotifyKey;
+	private boolean disableNotify = false;
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -360,6 +366,8 @@ public abstract class StandOutWindow extends Service {
 		mLayoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		startedForeground = false;
+		pref = PreferenceManager.getDefaultSharedPreferences(this);
+		disableNotifyKey = getString(R.string.disable_notify_key);
 	}
 
 	@Override
@@ -1131,34 +1139,38 @@ public abstract class StandOutWindow extends Service {
 		// add view to internal map
 		sWindowCache.putCache(id, getClass(), window);
 
-		// get the persistent notification
-		Notification notification = getPersistentNotification(id);
+		disableNotify = pref.getBoolean(disableNotifyKey, false);
 
-		// show the notification
-		if (notification != null) {
-			notification.flags = notification.flags
-					| Notification.FLAG_NO_CLEAR;
+		if (!disableNotify) {
+			// get the persistent notification
+			Notification notification = getPersistentNotification(id);
 
-			// only show notification if not shown before
-			if (!startedForeground) {
-				// tell Android system to show notification
-				startForeground(
-						getClass().hashCode() + ONGOING_NOTIFICATION_ID,
-						notification);
-				startedForeground = true;
+			// show the notification
+			if (notification != null) {
+				notification.flags = notification.flags
+						| Notification.FLAG_NO_CLEAR;
+
+				// only show notification if not shown before
+				if (!startedForeground) {
+					// tell Android system to show notification
+					startForeground(
+							getClass().hashCode() + ONGOING_NOTIFICATION_ID,
+							notification);
+					startedForeground = true;
+				} else {
+					// update notification if shown before
+					mNotificationManager.notify(getClass().hashCode()
+							+ ONGOING_NOTIFICATION_ID, notification);
+				}
 			} else {
-				// update notification if shown before
-				mNotificationManager.notify(getClass().hashCode()
-						+ ONGOING_NOTIFICATION_ID, notification);
-			}
-		} else {
-			// notification can only be null if it was provided before
-			if (!startedForeground) {
-				throw new RuntimeException("Your StandOutWindow service must"
-						+ "provide a persistent notification."
-						+ "The notification prevents Android"
-						+ "from killing your service in low"
-						+ "memory situations.");
+				// notification can only be null if it was provided before
+				if (!startedForeground) {
+					throw new RuntimeException("Your StandOutWindow service must"
+							+ "provide a persistent notification."
+							+ "The notification prevents Android"
+							+ "from killing your service in low"
+							+ "memory situations.");
+				}
 			}
 		}
 
@@ -1233,13 +1245,17 @@ public abstract class StandOutWindow extends Service {
 				ex.printStackTrace();
 			}
 
-			// display the notification
-			notification.flags = notification.flags
-					| Notification.FLAG_NO_CLEAR
-					| Notification.FLAG_AUTO_CANCEL;
+			disableNotify = pref.getBoolean(disableNotifyKey, false);
 
-			mNotificationManager.notify(getClass().hashCode() + id,
-					notification);
+			if (!disableNotify) {
+				// display the notification
+				notification.flags = notification.flags
+						| Notification.FLAG_NO_CLEAR
+						| Notification.FLAG_AUTO_CANCEL;
+
+				mNotificationManager.notify(getClass().hashCode() + id,
+						notification);
+			}
 
 		} else {
 			// if hide not enabled, close window
@@ -1272,8 +1288,12 @@ public abstract class StandOutWindow extends Service {
 			return;
 		}
 
-		// remove hidden notification
-		mNotificationManager.cancel(getClass().hashCode() + id);
+		disableNotify = pref.getBoolean(disableNotifyKey, false);
+
+		if (!disableNotify) {
+			// remove hidden notification
+			mNotificationManager.cancel(getClass().hashCode() + id);
+		}
 
 		unfocus(window);
 
