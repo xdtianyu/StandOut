@@ -9,6 +9,7 @@ import wei.mark.standout.StandOutWindow.StandOutLayoutParams;
 import wei.mark.standout.Utils;
 import wei.mark.standout.constants.StandOutFlags;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -264,6 +265,18 @@ public class Window extends FrameLayout {
 		}
 
 		return super.dispatchKeyEvent(event);
+	}
+
+	@Override
+	protected void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		DisplayMetrics metrics = mContext.getResources()
+				.getDisplayMetrics();
+		displayWidth = metrics.widthPixels;
+		displayHeight = (int) (metrics.heightPixels - 25 * metrics.density);
+		int width = (int) (getWidth() * (metrics.widthPixels * 1.0 / metrics.heightPixels));
+		int height = (int) (getHeight() * (metrics.heightPixels * 1.0 / metrics.widthPixels));
+		edit().setSize(width, height, false).commit();
 	}
 
 	/**
