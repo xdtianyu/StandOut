@@ -1602,6 +1602,8 @@ public abstract class StandOutWindow extends Service {
 		}
 	}
 
+	public abstract boolean isDisableMove(int id);
+
 	/**
 	 * Internal touch handler for handling moving the window.
 	 * 
@@ -1615,6 +1617,9 @@ public abstract class StandOutWindow extends Service {
 	 */
 	public boolean onTouchHandleMove(int id, Window window, View view,
 			MotionEvent event) {
+		if (isDisableMove(id)) {
+			return true;
+		}
 		StandOutLayoutParams params = window.getLayoutParams();
 
 		// how much you have to move in either direction in order for the
