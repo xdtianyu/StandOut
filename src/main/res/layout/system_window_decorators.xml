@@ -27,6 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:maxLines="1"
             android:text="Title"
@@ -68,6 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:contentDescription="@string/corner"
         android:src="@drawable/corner" />
 

@@ -389,7 +389,7 @@ public class Window extends FrameLayout {
 	 */
 	private View getSystemDecorations() {
 		final View decorations = mLayoutInflater.inflate(
-				R.layout.system_window_decorators, null);
+				R.layout.system_window_decorators, this, false);
 
 		// icon
 		final ImageView icon = (ImageView) decorations
@@ -823,7 +823,7 @@ public class Window extends FrameLayout {
 				if (Utils.isSet(flags,
 						StandOutFlags.FLAG_WINDOW_EDGE_LIMITS_ENABLE)) {
 					// if gravity is not TOP|LEFT throw exception
-					if (mParams.gravity != (Gravity.TOP | Gravity.LEFT)) {
+					if (mParams.gravity != (Gravity.TOP | Gravity.START)) {
 						throw new IllegalStateException(
 								"The window "
 										+ id
