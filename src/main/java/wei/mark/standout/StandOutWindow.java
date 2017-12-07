@@ -120,7 +120,11 @@ public abstract class StandOutWindow extends Service {
      */
     public static void show(Context context,
             Class<? extends StandOutWindow> cls, int id) {
-        context.startService(getShowIntent(context, cls, id));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(getShowIntent(context, cls, id));
+        } else {
+            context.startService(getShowIntent(context, cls, id));
+        }
     }
 
     /**
@@ -1007,6 +1011,14 @@ public abstract class StandOutWindow extends Service {
         return false;
     }
 
+    private void tryRemoveView(View view) {
+        try {
+            mWindowManager.removeView(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Show or restore a window corresponding to the id. Return the window that
      * was shown/restored.
@@ -1048,6 +1060,7 @@ public abstract class StandOutWindow extends Service {
         StandOutLayoutParams params = window.getLayoutParams();
 
         try {
+            tryRemoveView(window);
             // add the view to the window manager
             mWindowManager.addView(window, params);
 
@@ -1055,12 +1068,12 @@ public abstract class StandOutWindow extends Service {
             if (animation != null) {
                 window.getChildAt(0).startAnimation(animation);
             }
+
+            // add view to internal map
+            sWindowCache.putCache(id, getClass(), window);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-        // add view to internal map
-        sWindowCache.putCache(id, getClass(), window);
 
         disableNotify = pref.getBoolean(disableNotifyKey, false);
 
