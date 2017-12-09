@@ -169,7 +169,11 @@ public abstract class StandOutWindow extends Service {
      */
     public static void closeAll(Context context,
             Class<? extends StandOutWindow> cls) {
-        context.startService(getCloseAllIntent(context, cls));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(getCloseAllIntent(context, cls));
+        } else {
+            context.startService(getCloseAllIntent(context, cls));
+        }
     }
 
     /**
