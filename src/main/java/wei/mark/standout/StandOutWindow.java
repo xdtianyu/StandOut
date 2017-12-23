@@ -1,6 +1,7 @@
 package wei.mark.standout;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,7 +17,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,9 +42,8 @@ import java.util.Set;
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
 
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+
 import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 
 /**
  * Extend this class to easily create and manage floating StandOut windows.
@@ -1063,6 +1062,11 @@ public abstract class StandOutWindow extends Service {
         // get the params corresponding to the id
         StandOutLayoutParams params = window.getLayoutParams();
 
+        params.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
+
         try {
             tryRemoveView(window);
             // add the view to the window manager
@@ -1909,9 +1913,9 @@ public abstract class StandOutWindow extends Service {
 
     private int getWindowType() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return TYPE_APPLICATION_OVERLAY;
+            return WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         } else {
-            return TYPE_PHONE;
+            return WindowManager.LayoutParams.TYPE_PHONE;
         }
     }
 
