@@ -631,6 +631,20 @@ public abstract class StandOutWindow extends Service {
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
                 .setContentIntent(contentIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationManager nm = ((NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE));
+            if (nm != null) {
+                String CHANNEL_ID = getPackageName();
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, getAppName(),
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                nm.createNotificationChannel(channel);
+                builder.setChannelId(CHANNEL_ID);
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             return builder.build();
         } else {
