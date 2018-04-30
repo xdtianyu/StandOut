@@ -42,7 +42,6 @@ import java.util.Set;
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
 
-
 import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
 
 /**
@@ -50,7 +49,7 @@ import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
  *
  * @author Mark Wei <markwei@gmail.com>
  *
- *         Contributors: Jason <github.com/jasonconnery>
+ * Contributors: Jason <github.com/jasonconnery>
  */
 public abstract class StandOutWindow extends Service {
     static final String TAG = "StandOutWindow";
@@ -1704,8 +1703,7 @@ public abstract class StandOutWindow extends Service {
         Window window = getWindow(id);
 
         if (window == null) {
-            throw new IllegalArgumentException("Tried to updateViewLayout("
-                    + id + ") a null window.");
+            Log.e(TAG, "Tried to updateViewLayout(" + id + ") a null window.");
         }
 
         if (window.visibility == Window.VISIBILITY_GONE) {
