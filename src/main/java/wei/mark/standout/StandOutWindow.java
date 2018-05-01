@@ -1337,6 +1337,7 @@ public abstract class StandOutWindow extends Service {
         for (int id : ids) {
             close(id);
         }
+        stopForeground(true);
     }
 
     /**
