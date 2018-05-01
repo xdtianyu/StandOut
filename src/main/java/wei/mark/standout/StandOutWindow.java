@@ -347,6 +347,7 @@ public abstract class StandOutWindow extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+        Log.d(TAG, "onStartCommand: " + intent);
 
         // intent should be created with
         // getShowIntent(), getHideIntent(), getCloseIntent()
@@ -629,6 +630,7 @@ public abstract class StandOutWindow extends Service {
                 .setWhen(when)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
+                .setSmallIcon(getAppIcon())
                 .setContentIntent(contentIntent);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -636,9 +638,9 @@ public abstract class StandOutWindow extends Service {
             NotificationManager nm = ((NotificationManager) getSystemService(
                     Context.NOTIFICATION_SERVICE));
             if (nm != null) {
-                String CHANNEL_ID = getPackageName();
+                String CHANNEL_ID = getPackageName() + "." + getClass().getSimpleName();
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID, getAppName(),
-                        NotificationManager.IMPORTANCE_DEFAULT);
+                        NotificationManager.IMPORTANCE_LOW);
                 nm.createNotificationChannel(channel);
                 builder.setChannelId(CHANNEL_ID);
             }
