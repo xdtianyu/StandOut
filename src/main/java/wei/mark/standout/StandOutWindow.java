@@ -167,11 +167,11 @@ public abstract class StandOutWindow extends Service {
      */
     public static void closeAll(Context context,
             Class<? extends StandOutWindow> cls) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(getCloseAllIntent(context, cls));
-        } else {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        //    context.startForegroundService(getCloseAllIntent(context, cls));
+        //} else {
             context.startService(getCloseAllIntent(context, cls));
-        }
+        //}
     }
 
     /**
@@ -1110,7 +1110,7 @@ public abstract class StandOutWindow extends Service {
                         | Notification.FLAG_NO_CLEAR;
 
                 // only show notification if not shown before
-                if (!startedForeground) {
+                if (!startedForeground || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     // tell Android system to show notification
                     startForeground(
                             getClass().hashCode() + ONGOING_NOTIFICATION_ID,
