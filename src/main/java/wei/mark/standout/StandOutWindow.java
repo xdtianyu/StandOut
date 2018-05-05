@@ -349,6 +349,9 @@ public abstract class StandOutWindow extends Service {
         super.onStartCommand(intent, flags, startId);
         Log.d(TAG, "onStartCommand: " + intent);
 
+        disableNotify = pref.getBoolean(disableNotifyKey, false) &&
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.O);
+
         // intent should be created with
         // getShowIntent(), getHideIntent(), getCloseIntent()
         if (intent != null) {
@@ -1098,8 +1101,6 @@ public abstract class StandOutWindow extends Service {
             ex.printStackTrace();
         }
 
-        disableNotify = pref.getBoolean(disableNotifyKey, false);
-
         if (!disableNotify) {
             // get the persistent notification
             Notification notification = getPersistentNotification(id);
@@ -1204,8 +1205,6 @@ public abstract class StandOutWindow extends Service {
                 ex.printStackTrace();
             }
 
-            disableNotify = pref.getBoolean(disableNotifyKey, false);
-
             if (!disableNotify) {
                 // display the notification
                 notification.flags = notification.flags
@@ -1246,8 +1245,6 @@ public abstract class StandOutWindow extends Service {
             Log.w(TAG, "Window " + id + " close cancelled by implementation.");
             return;
         }
-
-        disableNotify = pref.getBoolean(disableNotifyKey, false);
 
         if (!disableNotify) {
             // remove hidden notification
