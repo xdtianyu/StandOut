@@ -1,5 +1,6 @@
 package wei.mark.standout;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -41,8 +42,6 @@ import java.util.Set;
 
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
-
-import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
 
 /**
  * Extend this class to easily create and manage floating StandOut windows.
@@ -167,11 +166,15 @@ public abstract class StandOutWindow extends Service {
      */
     public static void closeAll(Context context,
             Class<? extends StandOutWindow> cls) {
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        //    context.startForegroundService(getCloseAllIntent(context, cls));
-        //} else {
-            context.startService(getCloseAllIntent(context, cls));
-        //}
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (cls.getName().equals(service.service.getClassName())) {
+                context.startService(getCloseAllIntent(context, cls));
+                Log.d(TAG, "closeAll: service is running");
+                return;
+            }
+        }
+        Log.d(TAG, "closeAll: service is not running");
     }
 
     /**
@@ -334,6 +337,7 @@ public abstract class StandOutWindow extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "onCreate");
 
         mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -398,6 +402,7 @@ public abstract class StandOutWindow extends Service {
     public void onDestroy() {
         super.onDestroy();
 
+        Log.d(TAG, "onDestroy");
         // closes all windows
         closeAll();
     }
@@ -1218,6 +1223,7 @@ public abstract class StandOutWindow extends Service {
         } else {
             // if hide not enabled, close window
             close(id);
+            Log.d(TAG, "hide not enabled, close window");
         }
     }
 
